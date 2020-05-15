@@ -5,6 +5,10 @@ require('dotenv').config()
 const yargs = require('yargs')
 const { runServer } = require('./server')
 
+const debug = require('debug')('omni:cli')
+
+debug('starting')
+
 yargs
   .help()
   .alias('h', 'help')
@@ -22,8 +26,12 @@ yargs.command(
     }),
   async args => {
     try {
+      debug('serve')
       await runServer(args.port)
-    } catch (error) {}
+    } catch (error) {
+      console.error(error)
+      process.exit(1)
+    }
   }
 )
 

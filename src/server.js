@@ -6,7 +6,7 @@ const pkg = require('../package.json')
 
 const { RealGpio, TerminalGpio } = require('./gpio')
 
-const debug = require('debug')('omni:serve')
+const debug = require('debug')('omni:server')
 
 const { SECRET_KEY, FAKE_GPIO, NODE_ENV = 'development' } = process.env
 
@@ -45,6 +45,7 @@ async function runServer(port) {
 
   const app = express()
 
+  debug('#runServer setup app')
   app.set('trust proxy', true)
   app.use(express.json())
   app.use(express.urlencoded({ extended: true }))
@@ -86,7 +87,7 @@ async function runServer(port) {
   app.post('/leds', async (req, res, next) => {
     try {
       const hasAuthn = req.headers.authorization === SECRET_KEY
-      debug(`set_leds hasAuthn="${hasAuthn}"`)
+      debug(`set_leds hasAuthn=${hasAuthn} ledLock=${ledLock}`)
 
       if (!hasAuthn) return res.status(401).send({ msg: 'Not authorized' })
 
@@ -95,6 +96,8 @@ async function runServer(port) {
 
       const [structError, patches] = LedPatches.validate(req.body)
       if (structError) return res.status(400).send({ msg: structError.message })
+
+      debug('patches=%O', patches)
 
       await gpio.patchLeds(patches)
 

@@ -1,5 +1,5 @@
 const { Gpio } = require('onoff')
-// const debug = require('debug')('omni:gpio')
+const debug = require('debug')('omni:gpio')
 
 //
 // https://pinout.xyz/pinout/blinkt#
@@ -29,7 +29,9 @@ class AbstractGpio {
 function hexToNumber(hex8) {
   const rgb = hex8.slice(1, -2)
   const alpha = hex8.slice(-2)
-  return parseInt(alpha + rgb, 16)
+  const number = parseInt(alpha + rgb, 16)
+  debug(`#hexToNumber input="${hex8}" output=${number}`)
+  return number
 }
 
 //
@@ -59,6 +61,8 @@ function applyPatches(pixels, patches) {
     result[patch.position] = hexToNumber(patch.colour)
   }
 
+  debug('#applyPatches input=%o output=%o', pixels, result)
+
   return result
 }
 
@@ -74,20 +78,26 @@ function dumpPixels(pixels) {
 
 class RealGpio extends AbstractGpio {
   async setup() {
+    debug('#setup')
     this.pixels = createPixels()
     this.data = new Gpio(DATA_PIN, 'out')
     this.clock = new Gpio(CLOCK_PIN, 'out')
   }
 
   async teardown() {
+    debug('#teardown')
     delete this.pixels
     this.data.unexport()
     this.clock.unexport()
   }
 
   writeByte(byte, numBits) {
+    debug(`#writeByte byte=${byte.toString(2)} numBits=${numBits}`)
+
     for (let i = 0; i < numBits; i++) {
       const bit = (byte >>> i) & 1
+
+      debug(`#writeByte bit=${bit}`)
 
       // big endian or little endian ?? ...
 
@@ -100,6 +110,8 @@ class RealGpio extends AbstractGpio {
   // ref: https://github.com/Irrelon/node-blinkt/blob/master/src/Blinkt.js#L134
   async patchLeds(patches) {
     this.pixels = applyPatches(this.pixels, patches)
+
+    debug('#patchLeds pixels=%o', this.pixels)
 
     // reset code ?
     this.writeByte(0, 32)
