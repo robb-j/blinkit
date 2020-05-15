@@ -1,0 +1,15 @@
+#
+# Configuration for eslint ~ https://eslint.org/
+#
+
+root: true
+parserOptions:
+  sourceType: module
+  ecmaVersion: 2018
+env:
+  node: true
+  jest: true
+extends:
+  - standard
+  - prettier
+  - prettier/standard

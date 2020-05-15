@@ -1,0 +1,21 @@
+{
+  "version": "0.5.4",
+  "projectName": "blinkit",
+  "preset": {
+    "name": "robb-j:node",
+    "version": "0.2.2"
+  },
+  "plugins": {
+    "npm": "0.1.0"
+  },
+  "params": {
+    "npm": {
+      "packageName": "blinkit",
+      "packageInfo": "",
+      "repository": ""
+    },
+    "commit-ops": {
+      "enabled": false
+    }
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "name": "blinkit",
+  "description": "",
+  "version": "0.0.0",
+  "private": true,
+  "repository": "",
+  "author": "",
+  "license": "MIT",
+  "scripts": {
+    "test": "jest",
+    "coverage": "jest --coverage",
+    "lint": "eslint src",
+    "prettier": "prettier --write '**/*.{js,json,css,md}'",
+    "preversion": "npm run test -s",
+    "postversion": "./bin/deploy",
+    "start": "node -r dotenv/config src/index.js",
+    "dev": "nodemon -x 'npm start' --watch src src/index.js"
+  },
+  "keywords": [],
+  "engines": {
+    "node": ">=8"
+  },
+  "dependencies": {
+    "debug": "^4.1.1",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "fs-extra": "^9.0.0",
+    "morgan": "^1.10.0",
+    "onoff": "^6.0.0",
+    "superstruct": "^0.8.3",
+    "valid-env": "^1.0.1",
+    "yargs": "^15.3.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.6",
+    "@types/fs-extra": "^8.1.0",
+    "@types/morgan": "^1.9.0",
+    "@types/node": "^14.0.1",
+    "@types/yargs": "^15.0.5",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-node": "^10.0.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "jest": "^24.9.0",
+    "lint-staged": "^9.5.0",
+    "nodemon": "^1.19.4",
+    "prettier": "^1.19.1",
+    "yorkie": "^2.0.0"
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true
+  },
+  "gitHooks": {
+    "pre-commit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{js,json,css,md}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "main": "src/index.js"
+}

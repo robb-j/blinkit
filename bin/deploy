@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+set -e
+
+# find out the version
+NAME=`node -e "process.stdout.write(require('./package.json').name)"`
+VERSION=v`node -e "process.stdout.write(require('./package.json').version)"`
+
+# load in the env
+source deploybot.env
+
+# generate deploybot endpoint
+ENDPOINT="$DEPLOYBOT_URL/build/$NAME/$VERSION?platforms=armv6"
+
+# Tar the local directory and post it to deploybot
+tar -cz --exclude '*.env' --exclude 'node_modules' --exclude '.git' * \
+  | curl --data-binary @- \
+    -X POST \
+    --header "Authorization: Bearer $DEPLOYBOT_AUTH" \
+    --header "Content-Type: application/gzip" \
+     $ENDPOINT

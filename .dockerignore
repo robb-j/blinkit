@@ -1,0 +1,9 @@
+#
+# Files to ignore from the docker daemon
+#
+
+.git
+node_modules
+coverage
+.DS_Store
+*.env
