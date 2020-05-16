@@ -5,7 +5,7 @@ require('dotenv').config()
 const yargs = require('yargs')
 const { runServer } = require('./server')
 
-const debug = require('debug')('omni:cli')
+const debug = require('debug')('blinkit:cli')
 
 debug('starting')
 

@@ -1,5 +1,5 @@
 const { Gpio } = require('onoff')
-const debug = require('debug')('omni:gpio')
+const debug = require('debug')('blinkit:gpio')
 
 //
 // https://pinout.xyz/pinout/blinkt#

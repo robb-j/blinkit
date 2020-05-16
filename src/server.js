@@ -6,7 +6,7 @@ const pkg = require('../package.json')
 
 const { RealGpio, TerminalGpio } = require('./gpio')
 
-const debug = require('debug')('omni:server')
+const debug = require('debug')('blinkit:server')
 
 const { SECRET_KEY, FAKE_GPIO, NODE_ENV = 'development' } = process.env
 
