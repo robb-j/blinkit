@@ -12,6 +12,19 @@ const { SECRET_KEY, FAKE_GPIO, NODE_ENV = 'development' } = process.env
 
 const hexRegex = /^#[0-9a-f]{8}$/i
 
+const pause = ms => new Promise(resolve => setTimeout(resolve, ms))
+
+const setAllLeds = colour => [
+  { position: 0, colour: colour },
+  { position: 1, colour: colour },
+  { position: 2, colour: colour },
+  { position: 3, colour: colour },
+  { position: 4, colour: colour },
+  { position: 5, colour: colour },
+  { position: 6, colour: colour },
+  { position: 4, colour: colour }
+]
+
 const struct = superstruct({
   types: {
     hex: str => hexRegex.test(str)
@@ -20,6 +33,10 @@ const struct = superstruct({
 
 async function shutdown(server, gpio, msg) {
   console.log(`${msg}, shutting down`)
+
+  await gpio.patchLeds(setAllLeds('#ff000001'))
+  await pause(200)
+  await gpio.patchLeds(setAllLeds('#00000000'))
 
   try {
     await gpio.teardown()
@@ -38,24 +55,13 @@ async function shutdown(server, gpio, msg) {
   }
 }
 
-const pause = ms => new Promise(resolve => setTimeout(resolve, ms))
-
 async function startupBlink(gpio, colour = '#ffffff01') {
   for (let i = 0; i < 8; i++) {
     await pause(10)
     await gpio.patchLeds([{ position: i, colour }])
   }
   await pause(250)
-  await gpio.patchLeds([
-    { position: 0, colour: '#00000000' },
-    { position: 1, colour: '#00000000' },
-    { position: 2, colour: '#00000000' },
-    { position: 3, colour: '#00000000' },
-    { position: 4, colour: '#00000000' },
-    { position: 5, colour: '#00000000' },
-    { position: 6, colour: '#00000000' },
-    { position: 7, colour: '#00000000' }
-  ])
+  await gpio.patchLeds(setAllLeds('#00000000'))
 }
 
 async function runServer(port) {
