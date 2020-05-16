@@ -22,7 +22,7 @@ const setAllLeds = colour => [
   { position: 4, colour: colour },
   { position: 5, colour: colour },
   { position: 6, colour: colour },
-  { position: 4, colour: colour }
+  { position: 7, colour: colour }
 ]
 
 const struct = superstruct({
