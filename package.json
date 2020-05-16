@@ -12,7 +12,6 @@
     "lint": "eslint src",
     "prettier": "prettier --write '**/*.{js,json,css,md}'",
     "preversion": "npm run test -s",
-    "postversion": "./bin/deploy",
     "start": "node -r dotenv/config src/index.js",
     "dev": "nodemon -x 'npm start' --watch src src/index.js"
   },
