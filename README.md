@@ -39,6 +39,10 @@ journalctl -fu blinkit
 ./hack/client.js off
 ```
 
+**future work / ideas**
+
+- A socket api to reduce latency
+
 ---
 
 > This project was set up by [puggle](https://npm.im/puggle)
