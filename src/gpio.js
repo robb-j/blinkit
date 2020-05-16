@@ -96,7 +96,7 @@ class RealGpio extends AbstractGpio {
     debug(`#writeByte byte=${byte.toString(2).padStart(8, '0')}`)
 
     for (let i = 0; i < 8; i++) {
-      const bit = (byte >>> (8 - i)) & 1
+      const bit = (byte >>> (7 - i)) & 1
 
       // big endian or little endian ?? ...
 
