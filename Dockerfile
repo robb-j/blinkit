@@ -1,5 +1,5 @@
 # Use a node alpine image install packages and run the start script
-FROM node:12-alpine
+FROM node:10-alpine
 RUN apk add --no-cache build-base python3
 WORKDIR /app
 EXPOSE 3000
