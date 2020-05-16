@@ -150,7 +150,7 @@ async function runServer(port) {
     process.on('SIGTERM', () => shutdown(server, gpio, 'Received SIGTERM'))
   })
 
-  await startupBlink()
+  await startupBlink(gpio)
 }
 
 module.exports = { runServer }
