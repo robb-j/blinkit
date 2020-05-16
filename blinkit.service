@@ -1,0 +1,18 @@
+#
+# https://nodesource.com/blog/running-your-node-js-app-with-systemd-part-1/
+#
+
+[Unit]
+Description=http api for a blinkt pi hat
+Documentation=https://github.com/robb-j/blinkit/
+After=network.target
+
+[Service]
+Type=simple
+User=node
+ExecStart=/usr/bin/node /usr/src/blinkit/src/cli.js serve
+WorkingDirectory=/usr/src/blinkit
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
