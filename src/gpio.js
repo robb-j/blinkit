@@ -122,8 +122,8 @@ class RealGpio extends AbstractGpio {
     // write each pixel
     for (const pixel of this.pixels) {
       const a = (pixel >>> 0) & 0xff
-      const g = (pixel >>> 8) & 0xff
-      const b = (pixel >>> 16) & 0xff
+      const b = (pixel >>> 8) & 0xff
+      const g = (pixel >>> 16) & 0xff
       const r = (pixel >>> 24) & 0xff
 
       this.writeByte(0b11100000 | (a & 0b00011111))
