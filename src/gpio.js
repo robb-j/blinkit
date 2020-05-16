@@ -27,9 +27,10 @@ class AbstractGpio {
 //
 
 function hexToNumber(hex8) {
-  const rgb = hex8.slice(1, -2)
-  const alpha = hex8.slice(-2)
-  const number = parseInt(alpha + rgb, 16)
+  // const rgb = hex8.slice(1, -2)
+  // const alpha = hex8.slice(-2)
+  // const number = parseInt(alpha + rgb, 16)
+  const number = parseInt(hex8.slice(1), 16)
   debug(`#hexToNumber input="${hex8}" output=${number}`)
   return number
 }
@@ -91,11 +92,11 @@ class RealGpio extends AbstractGpio {
     this.clock.unexport()
   }
 
-  writeByte(byte, numBits) {
-    debug(`#writeByte byte=${byte.toString(2).padStart(numBits, '0')}`)
+  writeByte(byte) {
+    debug(`#writeByte byte=${byte.toString(2).padStart(8, '0')}`)
 
-    for (let i = 0; i < numBits; i++) {
-      const bit = (byte >>> i) & 1
+    for (let i = 0; i < 8; i++) {
+      const bit = (byte >>> (8 - i)) & 1
 
       // big endian or little endian ?? ...
 
@@ -112,15 +113,26 @@ class RealGpio extends AbstractGpio {
     debug('#patchLeds pixels=%o', this.pixels)
 
     // reset code ?
-    this.writeByte(0, 32)
+    this.writeByte(0)
+    this.writeByte(0)
+    this.writeByte(0)
+    this.writeByte(0)
 
     // write each pixel
     for (const pixel of this.pixels) {
-      this.writeByte(pixel, 32)
+      const a = (pixel >>> 0) & 0xff
+      const g = (pixel >>> 8) & 0xff
+      const b = (pixel >>> 16) & 0xff
+      const r = (pixel >>> 24) & 0xff
+
+      this.writeByte(a)
+      this.writeByte(r)
+      this.writeByte(g)
+      this.writeByte(b)
     }
 
     // finish code ?
-    this.writeByte(0xff, 8)
+    this.writeByte(0xff)
 
     // latch?
     this.data.writeSync(0)
