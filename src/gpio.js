@@ -8,6 +8,7 @@ const debug = require('debug')('blinkit:gpio')
 const DATA_PIN = 23
 const CLOCK_PIN = 24
 // const HEX8_MAX = 0xffffffff
+// const MAX_BRIGHTNESS_MASK = 0x1f
 // const MIN_BRIGHTNESS_MASK = 0xE0
 
 class AbstractGpio {
@@ -125,10 +126,10 @@ class RealGpio extends AbstractGpio {
       const b = (pixel >>> 16) & 0xff
       const r = (pixel >>> 24) & 0xff
 
-      this.writeByte(a)
-      this.writeByte(r)
-      this.writeByte(g)
+      this.writeByte(0b11100000 | (a & 0b00011111))
       this.writeByte(b)
+      this.writeByte(g)
+      this.writeByte(r)
     }
 
     // finish code ?
