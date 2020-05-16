@@ -7,6 +7,10 @@ Coming soon...
 - https://github.com/Irrelon/node-blinkt
 - https://github.com/pimoroni/blinkt
 
+**thoughts**
+
+- I'm not really sure how the brightness channel works
+
 **commands**
 
 ```bash
@@ -18,6 +22,7 @@ sudo ln -s /usr/src/blinkit/blinkit.service /lib/systemd/system/blinkit.service
 
 # Setup the daemon
 sudo systemctl daemon-reload
+sudo systemctl enable blinkit
 sudo systemctl start blinkit
 
 # Watch logs
