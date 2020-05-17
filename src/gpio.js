@@ -1,4 +1,5 @@
 const { Gpio } = require('onoff')
+const chalk = require('chalk')
 const debug = require('debug')('blinkit:gpio')
 
 //
@@ -12,9 +13,9 @@ const CLOCK_PIN = 24
 // const MIN_BRIGHTNESS_MASK = 0xE0
 
 class AbstractGpio {
-  async setup() {}
-  async teardown() {}
-  async patchLeds() {}
+  setup() {}
+  teardown() {}
+  patchLeds() {}
 }
 
 // useful: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators#Bitwise_OR
@@ -63,30 +64,35 @@ function applyPatches(pixels, patches) {
     result[patch.position] = hexToNumber(patch.colour)
   }
 
-  debug('#applyPatches input=%o output=%o', pixels, result)
+  const r = arr => arr.map(v => v.toString(16))
+  debug('#applyPatches input=%o output=%o', r(pixels), r(result))
 
   return result
 }
 
 // Output pixels to stdout for inspection
 function dumpPixels(pixels) {
-  console.log('LED_DUMP')
+  process.stdout.write('[LED] ')
   for (const pixel of pixels) {
-    const hex = pixel.toString(16).padStart(8, '0')
-    process.stdout.write(`#${hex} `)
+    const hex = pixel
+      .toString(16)
+      .padStart(8, '0')
+      .slice(0, -2)
+
+    process.stdout.write(chalk.hex(hex)('██') + ' ')
   }
   console.log()
 }
 
 class RealGpio extends AbstractGpio {
-  async setup() {
+  setup() {
     debug('#setup')
     this.pixels = createPixels()
     this.data = new Gpio(DATA_PIN, 'out')
     this.clock = new Gpio(CLOCK_PIN, 'out')
   }
 
-  async teardown() {
+  teardown() {
     debug('#teardown')
     delete this.pixels
     this.data.unexport()
@@ -108,7 +114,7 @@ class RealGpio extends AbstractGpio {
   }
 
   // ref: https://github.com/Irrelon/node-blinkt/blob/master/src/Blinkt.js#L134
-  async patchLeds(patches) {
+  patchLeds(patches) {
     this.pixels = applyPatches(this.pixels, patches)
 
     debug('#patchLeds pixels=%o', this.pixels)
@@ -145,15 +151,15 @@ class RealGpio extends AbstractGpio {
 }
 
 class TerminalGpio extends AbstractGpio {
-  async setup() {
+  setup() {
     this.pixels = createPixels()
   }
 
-  async teardown() {
+  teardown() {
     delete this.pixels
   }
 
-  async patchLeds(patches) {
+  patchLeds(patches) {
     this.pixels = applyPatches(this.pixels, patches)
     dumpPixels(this.pixels)
   }
