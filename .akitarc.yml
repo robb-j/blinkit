@@ -1,0 +1,48 @@
+url: ws://localhost:3000/leds
+
+messages:
+  white:
+    - { position: 0, colour: '#ffffff25' }
+    - { position: 1, colour: '#ffffff25' }
+    - { position: 2, colour: '#ffffff25' }
+    - { position: 3, colour: '#ffffff25' }
+    - { position: 4, colour: '#ffffff25' }
+    - { position: 5, colour: '#ffffff25' }
+    - { position: 6, colour: '#ffffff25' }
+    - { position: 7, colour: '#ffffff25' }
+  red:
+    - { position: 0, colour: '#ff000025' }
+    - { position: 1, colour: '#ff000025' }
+    - { position: 2, colour: '#ff000025' }
+    - { position: 3, colour: '#ff000025' }
+    - { position: 4, colour: '#ff000025' }
+    - { position: 5, colour: '#ff000025' }
+    - { position: 6, colour: '#ff000025' }
+    - { position: 7, colour: '#ff000025' }
+  green:
+    - { position: 0, colour: '#00ff0025' }
+    - { position: 1, colour: '#00ff0025' }
+    - { position: 2, colour: '#00ff0025' }
+    - { position: 3, colour: '#00ff0025' }
+    - { position: 4, colour: '#00ff0025' }
+    - { position: 5, colour: '#00ff0025' }
+    - { position: 6, colour: '#00ff0025' }
+    - { position: 7, colour: '#00ff0025' }
+  blue:
+    - { position: 0, colour: '#0000ff25' }
+    - { position: 1, colour: '#0000ff25' }
+    - { position: 2, colour: '#0000ff25' }
+    - { position: 3, colour: '#0000ff25' }
+    - { position: 4, colour: '#0000ff25' }
+    - { position: 5, colour: '#0000ff25' }
+    - { position: 6, colour: '#0000ff25' }
+    - { position: 7, colour: '#0000ff25' }
+  off:
+    - { position: 0, colour: '#00000000' }
+    - { position: 1, colour: '#00000000' }
+    - { position: 2, colour: '#00000000' }
+    - { position: 3, colour: '#00000000' }
+    - { position: 4, colour: '#00000000' }
+    - { position: 5, colour: '#00000000' }
+    - { position: 6, colour: '#00000000' }
+    - { position: 7, colour: '#00000000' }
