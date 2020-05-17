@@ -173,12 +173,12 @@ yargs.command(
         if (args.pause > 0) {
           await pause(args.pause)
           on = !on
-          await patchAll('00000000')
+          await patchAll('#00000000')
         }
       }, args.interval)
 
       const reset = async () => {
-        await patchAll('00000000')
+        await patchAll('#00000000')
         process.exit(1)
       }
 
@@ -195,7 +195,30 @@ yargs.command(
   'off',
   'Turn off all leds',
   yargs => yargs,
-  async args => patchAll('00000000')
+  async args => patchAll('#00000000')
+)
+
+yargs.command(
+  'rainbow',
+  'Do a rainbow',
+  yargs => yargs,
+  async args => {
+    const colours = [
+      '#ff000050',
+      '#ffa50050',
+      '#ffff0050',
+      '#00800050',
+      '#0000ff50',
+      '#66339950',
+      '#4b008250',
+      '#00000050'
+    ]
+
+    for (const c of colours) {
+      await patchAll(c)
+      await pause(100)
+    }
+  }
 )
 
 yargs.parse()
