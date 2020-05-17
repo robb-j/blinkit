@@ -56,7 +56,7 @@ Where **patch.json** is below, it sets the first led to red and the 5th led to g
 
 ```json
 [
-  { "position": 0, "colour": "#ff000025" }
+  { "position": 0, "colour": "#ff000025" },
   { "position": 4, "colour": "#00ff0025" }
 ]
 ```
@@ -80,8 +80,8 @@ const socket = new WebSocket('ws://localhost:3000/leds', {
   headers: { authorization: 'your_authorization_secret' }
 })
 
-// Emit a led change
-socket.emit(
+// Send a led change
+socket.send(
   JSON.stringify([
     { position: 4, colour: '#c0ffee27' },
     { position: 2, colour: '#be080627' }
