@@ -248,8 +248,8 @@ These are commands you might need to run but probably won't, also in no particul
 # Generate the table of contents in this readme
 npm run gen-readme-toc
 
-# on the pi
-# ...
+# ssh node@eclair.local
+# Tail the logs of the systemd service
 journalctl -fu blinkit
 ```
 
