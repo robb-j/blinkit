@@ -64,7 +64,7 @@ function applyPatches(pixels, patches) {
     result[patch.position] = hexToNumber(patch.colour)
   }
 
-  const r = arr => arr.map(v => v.toString(16))
+  const r = (arr) => arr.map((v) => v.toString(16))
   debug('#applyPatches input=%o output=%o', r(pixels), r(result))
 
   return result
@@ -74,10 +74,7 @@ function applyPatches(pixels, patches) {
 function dumpPixels(pixels) {
   process.stdout.write('[LED] ')
   for (const pixel of pixels) {
-    const hex = pixel
-      .toString(16)
-      .padStart(8, '0')
-      .slice(0, -2)
+    const hex = pixel.toString(16).padStart(8, '0').slice(0, -2)
 
     process.stdout.write(chalk.hex(hex)('██') + ' ')
   }

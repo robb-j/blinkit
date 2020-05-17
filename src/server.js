@@ -14,14 +14,14 @@ const {
   SECRET_KEY,
   FAKE_GPIO = 'false',
   ACCESS_LOGS = 'false',
-  NODE_ENV = 'development'
+  NODE_ENV = 'development',
 } = process.env
 
 const hexRegex = /^#[0-9a-f]{8}$/i
 
-const pause = ms => new Promise(resolve => setTimeout(resolve, ms))
+const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
-const setAllLeds = colour => [
+const setAllLeds = (colour) => [
   { position: 0, colour: colour },
   { position: 1, colour: colour },
   { position: 2, colour: colour },
@@ -29,18 +29,18 @@ const setAllLeds = colour => [
   { position: 4, colour: colour },
   { position: 5, colour: colour },
   { position: 6, colour: colour },
-  { position: 7, colour: colour }
+  { position: 7, colour: colour },
 ]
 
 const struct = superstruct({
   types: {
-    hex: str => hexRegex.test(str)
-  }
+    hex: (str) => hexRegex.test(str),
+  },
 })
 
 const LedPatch = struct({
   position: 'number',
-  colour: 'string'
+  colour: 'string',
 })
 const LedPatches = struct.array([LedPatch])
 
@@ -58,12 +58,12 @@ async function shutdown(server, gpio, wss, msg) {
 
     debug('close websocket server')
     await new Promise((resolve, reject) => {
-      wss.close(err => (err ? reject(err) : resolve()))
+      wss.close((err) => (err ? reject(err) : resolve()))
     })
 
     debug('shut down server')
     await new Promise((resolve, reject) =>
-      server.close(err => (err ? reject(err) : resolve()))
+      server.close((err) => (err ? reject(err) : resolve()))
     )
   } catch (error) {
     console.error(error)
@@ -97,7 +97,7 @@ function createApp(gpio) {
   app.get('/', (req, res) => {
     res.send({
       pkg: { name: pkg.name, version: pkg.version },
-      msg: 'ok'
+      msg: 'ok',
     })
   })
 
@@ -164,7 +164,7 @@ function createSocketServer(server, gpio) {
     //
     // For each new socket, listen to messages from it
     //
-    ws.on('message', payload => {
+    ws.on('message', (payload) => {
       debug(`ws@message url="${url}"`)
       try {
         // Parse the payload and if valid send to the gpio
@@ -223,7 +223,7 @@ async function runServer(port) {
   // Wait for the server to start and listen for signals to shutdown
   //
   await new Promise((resolve, reject) => {
-    server.listen(port, err => {
+    server.listen(port, (err) => {
       if (err) reject(err)
       else resolve()
     })

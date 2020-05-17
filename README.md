@@ -77,14 +77,14 @@ const WebSocket = require('ws')
 
 // Create a websocket connection
 const socket = new WebSocket('ws://localhost:3000/leds', {
-  headers: { authorization: 'your_authorization_secret' }
+  headers: { authorization: 'your_authorization_secret' },
 })
 
 // Send a led change
 socket.send(
   JSON.stringify([
     { position: 4, colour: '#c0ffee27' },
-    { position: 2, colour: '#be080627' }
+    { position: 2, colour: '#be080627' },
   ])
 )
 ```
@@ -280,6 +280,7 @@ and can ignores files using [.prettierignore](/.prettierignore).
   and split up routes into different files
 - Setup [standard-version](https://www.npmjs.com/package/standard-version)
   w/ [commitlint](https://www.npmjs.com/package/@commitlint/cli) when a stable API is reached
+- Add docker images?
 
 ---
 

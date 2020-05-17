@@ -8,8 +8,8 @@ const yargs = require('yargs')
 const fse = require('fs-extra')
 const { validateEnv } = require('valid-env')
 
-const hex = num => '#' + num.toString(16)
-const pause = ms => new Promise(resolve => setTimeout(resolve, ms))
+const hex = (num) => '#' + num.toString(16)
+const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
 validateEnv(['SECRET_KEY'])
 
@@ -20,8 +20,8 @@ const PATCH_DIR = path.join(__dirname, 'patches')
 const client = got.extend({
   prefixUrl: BLINKIT_HOST,
   headers: {
-    Authorization: SECRET_KEY
-  }
+    Authorization: SECRET_KEY,
+  },
 })
 
 function patch(json) {
@@ -37,22 +37,17 @@ function patchAll(colour) {
     { position: 4, colour },
     { position: 5, colour },
     { position: 6, colour },
-    { position: 7, colour }
+    { position: 7, colour },
   ])
 }
 
-yargs
-  .help()
-  .alias('h', 'help')
-  .demandCommand()
-  .recommendCommands()
-  .strict()
+yargs.help().alias('h', 'help').demandCommand().recommendCommands().strict()
 
 yargs.command(
   'pulse',
   'Pulse a rainbow',
-  yargs => yargs,
-  async args => {
+  (yargs) => yargs,
+  async (args) => {
     try {
       const off = hex(0x00000000)
       const red = hex(0xff000027)
@@ -71,7 +66,7 @@ yargs.command(
         { position: 4, colour: off },
         { position: 5, colour: off },
         { position: 6, colour: off },
-        { position: 7, colour: off }
+        { position: 7, colour: off },
       ])
 
       for (let i = 1; i < 8; i++) {
@@ -79,7 +74,7 @@ yargs.command(
 
         await patch([
           { position: i - 1, colour: off },
-          { position: i, colour: colours[current] }
+          { position: i, colour: colours[current] },
         ])
       }
 
@@ -88,7 +83,7 @@ yargs.command(
 
         await patch([
           { position: i + 1, colour: off },
-          { position: i, colour: colours[current] }
+          { position: i, colour: colours[current] },
         ])
       }
 
@@ -103,13 +98,13 @@ yargs.command(
 yargs.command(
   'patch [file]',
   'Send a specific patch',
-  yargs =>
+  (yargs) =>
     yargs.positional('file', {
       type: 'string',
       describe: 'The patch file',
-      required: false
+      required: false,
     }),
-  async args => {
+  async (args) => {
     try {
       if (!args.file) {
         const contents = fse.readdirSync(PATCH_DIR)
@@ -138,24 +133,24 @@ yargs.command(
 yargs.command(
   'tick',
   '',
-  yargs =>
+  (yargs) =>
     yargs
       .option('colour', {
         type: 'string',
         describe: 'The colour to tick tock in',
-        default: 'ffffff25'
+        default: 'ffffff25',
       })
       .option('interval', {
         type: 'number',
         describe: 'How many ms to tick',
-        default: 1000
+        default: 1000,
       })
       .option('pause', {
         type: 'number',
         describe: 'How long to stay lit',
-        default: 0
+        default: 0,
       }),
-  async args => {
+  async (args) => {
     try {
       const hex = parseInt(args.colour, 16)
       if (Number.isNaN(hex) || args.colour.length !== 8) {
@@ -194,15 +189,15 @@ yargs.command(
 yargs.command(
   'off',
   'Turn off all leds',
-  yargs => yargs,
-  async args => patchAll('#00000000')
+  (yargs) => yargs,
+  async (args) => patchAll('#00000000')
 )
 
 yargs.command(
   'rainbow',
   'Do a rainbow',
-  yargs => yargs,
-  async args => {
+  (yargs) => yargs,
+  async (args) => {
     const colours = [
       '#ff000050',
       '#ffa50050',
@@ -211,7 +206,7 @@ yargs.command(
       '#0000ff50',
       '#66339950',
       '#4b008250',
-      '#00000050'
+      '#00000050',
     ]
 
     for (const c of colours) {
