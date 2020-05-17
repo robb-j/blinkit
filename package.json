@@ -12,8 +12,9 @@
     "lint": "eslint src",
     "prettier": "prettier --write '**/*.{js,json,css,md}'",
     "preversion": "npm run test -s",
-    "start": "node -r dotenv/config src/index.js",
-    "dev": "nodemon -x 'npm start' --watch src src/index.js"
+    "start": "node src/cli.js",
+    "debug": "node --inspect-brk src/cli.js",
+    "gen-readme-toc": "md-toc -i"
   },
   "keywords": [],
   "engines": {
@@ -33,6 +34,7 @@
     "yargs": "^15.3.1"
   },
   "devDependencies": {
+    "@robb_j/md-toc": "^0.3.1",
     "@types/express": "^4.17.6",
     "@types/fs-extra": "^8.1.0",
     "@types/morgan": "^1.9.0",
