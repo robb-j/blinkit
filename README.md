@@ -41,7 +41,8 @@ journalctl -fu blinkit
 
 **future work / ideas**
 
-- A socket api to reduce latency
+- [x] A socket api to reduce latency
+- [ ] Add documentation
 
 ---
 
