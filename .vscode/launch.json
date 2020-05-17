@@ -7,6 +7,13 @@
     {
       "type": "node",
       "request": "attach",
+      "name": "Attach to localhost",
+      "processId": "${command:PickProcess}",
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "type": "node",
+      "request": "attach",
       "name": "Attach to eclair",
       "skipFiles": ["<node_internals>/**"],
       "address": "eclair.local",
@@ -15,5 +22,3 @@
     }
   ]
 }
-
-// aabbccdd
