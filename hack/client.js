@@ -13,17 +13,19 @@ const pause = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 validateEnv(['SECRET_KEY'])
 
+const { SECRET_KEY, BLINKIT_HOST = 'http://eclair.local:3000' } = process.env
+
 const PATCH_DIR = path.join(__dirname, 'patches')
 
 const client = got.extend({
-  prefixUrl: 'http://eclair.local:3000/leds',
+  prefixUrl: BLINKIT_HOST,
   headers: {
-    Authorization: process.env.SECRET_KEY
+    Authorization: SECRET_KEY
   }
 })
 
 function patch(json) {
-  return client.post('', { json }).then(() => pause(50))
+  return client.post('leds', { json }).then(() => pause(50))
 }
 
 function patchAll(colour) {
@@ -59,11 +61,18 @@ yargs.command(
 
       const colours = [red, green, blue]
 
-      await patchAll(off)
-
       let current = 0
 
-      await patch([{ position: 0, colour: colours[current] }])
+      await patch([
+        { position: 0, colour: colours[current] },
+        { position: 1, colour: off },
+        { position: 2, colour: off },
+        { position: 3, colour: off },
+        { position: 4, colour: off },
+        { position: 5, colour: off },
+        { position: 6, colour: off },
+        { position: 7, colour: off }
+      ])
 
       for (let i = 1; i < 8; i++) {
         current = (current + 1) % colours.length
@@ -73,8 +82,6 @@ yargs.command(
           { position: i, colour: colours[current] }
         ])
       }
-
-      await patch([{ position: 7, colour: off }])
 
       for (let i = 6; i >= 0; i--) {
         current = (current + 1) % colours.length
