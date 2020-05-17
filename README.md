@@ -12,9 +12,10 @@ on a raspberry pi's gpio.
 
 - [The server](#the-server)
   - [Http api](#http-api)
-  - [Hex colours](#hex-colours)
   - [Socket api](#socket-api)
+  - [Hex colours](#hex-colours)
 - [Installation](#installation)
+- [Environment variables](#environment-variables)
 - [Development](#development)
   - [Setup](#setup)
   - [Regular use](#regular-use)
@@ -60,11 +61,6 @@ Where **patch.json** is below, it sets the first led to red and the 5th led to g
 ]
 ```
 
-### Hex colours
-
-The colour is an eight character hexadecimal and starts with a hash – `#`.
-Each 2 letters are the `red`, `green`, `blue` and `brightness` components, in that order.
-
 ### Socket api
 
 There is a socket api to maintain a single connection and periodically update the leds.
@@ -92,6 +88,11 @@ socket.emit(
   ])
 )
 ```
+
+### Hex colours
+
+The colour is an eight character hexadecimal and starts with a hash – `#`.
+Each 2 letters are the `red`, `green`, `blue` and `brightness` components, in that order.
 
 ## Installation
 
