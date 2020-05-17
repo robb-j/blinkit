@@ -3,24 +3,26 @@
 A small express server to light up the [blinkt led hat](https://learn.pimoroni.com/blinkt)
 on a raspberry pi's gpio.
 
-> I miss-named it blink**I**t when I first set this up and never got around to renaming everything
+> I miss-named it blink**I**t (with an "I") when I first set this up
+> and never got around to renaming everything
 
 <!-- toc-head -->
 
 ## Table of contents
 
 - [The server](#the-server)
-  - [http api](#http-api)
-  - [socket api](#socket-api)
-- [installation](#installation)
-- [development](#development)
-  - [setup](#setup)
-  - [regular use](#regular-use)
-  - [testing](#testing)
-  - [irregular use](#irregular-use)
-  - [code formatting](#code-formatting)
-- [references](#references)
-- [future work](#future-work)
+  - [Http api](#http-api)
+  - [Hex colours](#hex-colours)
+  - [Socket api](#socket-api)
+- [Installation](#installation)
+- [Development](#development)
+  - [Setup](#setup)
+  - [Regular use](#regular-use)
+  - [Testing](#testing)
+  - [Irregular use](#irregular-use)
+  - [Code formatting](#code-formatting)
+- [References](#references)
+- [Future work](#future-work)
 
 <!-- toc-tail -->
 
@@ -36,18 +38,20 @@ and what colour to make them.
 The are two ways of doing this, the http api or with websockets,
 both are authenticated with a pre-shared token, `$SECRET_KEY`.
 
-### http api
+### Http api
 
-Here's how to use the http api, the examples use [httpie](https://httpie.org/)
+Here's how to use the http api, the examples use [httpie](https://httpie.org/).
+In my setup, my pi is available as `eclair.local`.
 
 ```bash
 # Check the server is there and running
 http eclair.local:3000/
 
+# Post up an existing patch
 cat patch.json | http eclair.local:3000/leds Authorization:$SECRET_KEY
 ```
 
-Where **patch.json** is below, it set's the first led to red and the 5th led to green
+Where **patch.json** is below, it sets the first led to red and the 5th led to green
 
 ```json
 [
@@ -56,16 +60,21 @@ Where **patch.json** is below, it set's the first led to red and the 5th led to 
 ]
 ```
 
+### Hex colours
+
 The colour is an eight character hexadecimal and starts with a hash – `#`.
 Each 2 letters are the `red`, `green`, `blue` and `brightness` components, in that order.
 
-### socket api
+### Socket api
 
 There is a socket api to maintain a single connection and periodically update the leds.
 You need to connect to the same endpoint with the same authorization header as the http api,
 then you can emit a set of patches, which is the same payload as above too.
 
 Here's an example in node.js using [ws](https://www.npmjs.com/package/ws):
+
+> There isn't a way of setting headers on ecma's WebSocket,
+> so there might need to be another auth method in the future
 
 ```js
 const WebSocket = require('ws')
@@ -84,11 +93,11 @@ socket.emit(
 )
 ```
 
-## installation
+## Installation
 
 > starting with a raspberry pi running raspbian lite
 
-**install node.js**
+**Install node.js**
 
 ```bash
 # ssh root@your_pi_host.local
@@ -107,7 +116,7 @@ ln -s /usr/src/node/bin/npx /usr/bin/npx
 rm -r $TMP
 ```
 
-**setup user and directory**
+**Setup user and directory**
 
 ```bash
 # ssh root@your_pi_host.local
@@ -121,7 +130,7 @@ mkdir -p /usr/src/blinkit
 chown -R node:node /usr/src/blinkit
 ```
 
-**setup app**
+**Setup app**
 
 ```bash
 # ssh root@your_pi_host.local
@@ -153,14 +162,27 @@ sudo systemctl enable blinkit
 sudo systemctl start blinkit
 ```
 
-**blink codes**
+**Blink codes**
 
 - When the server has started up and is ready for request it pulse a "loading bar" of white.
 - When the server exits gracefully it will flash red.
 
-## development
+## Environment variables
 
-### setup
+- `NODE_ENV` - no effect currently, determines if development or production
+- `SECRET_KEY` - the pre-shared key to authenticate clients with,
+  they have to pass it as an Authorization header
+- `FAKE_GPIO` - set to `true` to output gpio results to the terminal,
+  so you can test it on a device without gpio.
+- `ACCESS_LOGS` - set to `true` to enable http access logs
+- `DEBUG` - [debug](https://www.npmjs.com/package/debug) parameter,
+  available namespaces: `blinkit:cli`, `blinkit:gpio`, `blinkit:server`.
+  Set to `blinkit*` to log everything relevant to this project.
+- `BLINKIT_HOST` used in hack/client.js to overide the host to connect to.
+
+## Development
+
+### Setup
 
 To develop on this repo you will need to have [node.js](https://nodejs.org)
 installed on your dev machine and have an understanding of it.
@@ -179,7 +201,7 @@ npm install
 cp .env.example .env
 ```
 
-### regular use
+### Regular use
 
 These are the commands you'll regularly run to develop the API, in no particular order.
 
@@ -200,7 +222,7 @@ source .env
 cat hack/patches/white.json | http :3000/leds Authorization:$SECRET_KEY
 ```
 
-### testing
+### Testing
 
 > Not currently in use
 
@@ -217,7 +239,7 @@ npm test -s
 npm run coverage -s
 ```
 
-### irregular use
+### Irregular use
 
 These are commands you might need to run but probably won't, also in no particular order.
 
@@ -230,7 +252,7 @@ npm run gen-readme-toc
 journalctl -fu blinkit
 ```
 
-### code formatting
+### Code formatting
 
 This repo uses [Prettier](https://prettier.io/) to automatically format code to a consistent standard.
 It works using the [yorkie](https://www.npmjs.com/package/yorkie)
@@ -243,17 +265,20 @@ You can manually run the formatter with `npm run prettier` if you want.
 Prettier is slightly configured in [package.json#prettier](/package.json)
 and can ignores files using [.prettierignore](/.prettierignore).
 
-## references
+## References
 
 - https://github.com/Irrelon/node-blinkt
 - https://github.com/pimoroni/blinkt
 
-## future work
+## Future work
 
-- Add documentation
 - Allow authentication for Ecma's WebSocket implementation
 - Add automated testing
 - Work out and document the brightness channel
+- If the logic needs to get more complicated, move to TypeScript
+  and split up routes into different files
+- Setup [standard-version](https://www.npmjs.com/package/standard-version)
+  w/ [commitlint](https://www.npmjs.com/package/@commitlint/cli) when a stable API is reached
 
 ---
 
