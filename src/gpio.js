@@ -78,7 +78,11 @@ function dumpPixels(pixels) {
 
     process.stdout.write(chalk.hex(hex)('██') + ' ')
   }
-  console.log()
+  process.stdout.write('\n')
+}
+
+function byteAlphaToNibble(input) {
+  return 0b11100000 | ((input >>> 3) & 0b00011111)
 }
 
 class RealGpio extends AbstractGpio {
@@ -94,6 +98,14 @@ class RealGpio extends AbstractGpio {
     delete this.pixels
     this.data.unexport()
     this.clock.unexport()
+  }
+
+  pulse(pulses) {
+    this.data.writeSync(0)
+    for (let i = 0; i < pulses; i++) {
+      this.clock.writeSync(1)
+      this.clock.writeSync(0)
+    }
   }
 
   writeByte(byte) {
@@ -116,11 +128,8 @@ class RealGpio extends AbstractGpio {
 
     debug('#patchLeds pixels=%o', this.pixels)
 
-    // reset code ?
-    this.writeByte(0)
-    this.writeByte(0)
-    this.writeByte(0)
-    this.writeByte(0)
+    // Send the start-of-file command
+    this.pulse(32)
 
     // write each pixel
     for (const pixel of this.pixels) {
@@ -129,21 +138,14 @@ class RealGpio extends AbstractGpio {
       const g = (pixel >>> 16) & 0xff
       const r = (pixel >>> 24) & 0xff
 
-      this.writeByte(0b11100000 | (a & 0b00011111))
+      this.writeByte(byteAlphaToNibble(a))
       this.writeByte(b)
       this.writeByte(g)
       this.writeByte(r)
     }
 
-    // finish code ?
-    this.writeByte(0xff)
-
-    // latch?
-    this.data.writeSync(0)
-    for (let i = 0; i < 36; i++) {
-      this.clock.writeSync(1)
-      this.clock.writeSync(0)
-    }
+    // Send the end-of-file command
+    this.pulse(36)
   }
 }
 
