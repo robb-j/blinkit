@@ -49,7 +49,7 @@ async function shutdown(server, gpio, wss, msg) {
 
   try {
     debug('flash red')
-    await gpio.patchLeds(setAllLeds('#ff000001'))
+    await gpio.patchLeds(setAllLeds('#ff000010'))
     await pause(200)
     await gpio.patchLeds(setAllLeds('#00000000'))
 
@@ -73,7 +73,7 @@ async function shutdown(server, gpio, wss, msg) {
   }
 }
 
-async function startupBlink(gpio, colour = '#ffffff01') {
+async function startupBlink(gpio, colour = '#ffffff10') {
   for (let i = 0; i < 8; i++) {
     await pause(10)
     await gpio.patchLeds([{ position: i, colour }])
