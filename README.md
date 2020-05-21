@@ -94,6 +94,9 @@ socket.send(
 The colour is an eight character hexadecimal and starts with a hash – `#`.
 Each 2 letters are the `red`, `green`, `blue` and `brightness` components, in that order.
 
+For `red`, `green` and `blue` the component represents at 0-255 component of an rgb colour.
+For `brightness` a 0-255 is converted to a 0-31 value which is sent to the led hat.
+
 ## Installation
 
 > starting with a raspberry pi running raspbian lite
@@ -275,7 +278,6 @@ and can ignores files using [.prettierignore](/.prettierignore).
 
 - Allow authentication for Ecma's WebSocket implementation
 - Add automated testing
-- Work out and document the brightness channel
 - If the logic needs to get more complicated, move to TypeScript
   and split up routes into different files
 - Setup [standard-version](https://www.npmjs.com/package/standard-version)
