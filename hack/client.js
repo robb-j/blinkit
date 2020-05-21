@@ -216,4 +216,15 @@ yargs.command(
   }
 )
 
+yargs.command(
+  'colour <hex>',
+  'Set a specific colour',
+  (yargs) =>
+    yargs.positional('hex', {
+      type: 'string',
+      describe: 'The colour to set the leds to',
+    }),
+  (args) => patchAll(args.hex)
+)
+
 yargs.parse()
