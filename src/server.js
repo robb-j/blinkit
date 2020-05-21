@@ -10,6 +10,9 @@ const { RealGpio, TerminalGpio } = require('./gpio')
 
 const debug = require('debug')('blinkit:server')
 
+//
+// Extract environment variables
+//
 const {
   SECRET_KEY,
   FAKE_GPIO = 'false',
@@ -17,10 +20,13 @@ const {
   NODE_ENV = 'development',
 } = process.env
 
+/** A regex to test for hex8s */
 const hexRegex = /^#[0-9a-f]{8}$/i
 
+/** Wrap setTimout in a promise */
 const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
+/** A utility to generate a patch to set all leds to a colour */
 const setAllLeds = (colour) => [
   { position: 0, colour: colour },
   { position: 1, colour: colour },
@@ -38,12 +44,16 @@ const struct = superstruct({
   },
 })
 
+/** A struct to test for an led patch */
 const LedPatch = struct({
   position: 'number',
-  colour: 'string',
+  colour: 'hex',
 })
+
+/** A struct to test for an array of led patches */
 const LedPatches = struct.array([LedPatch])
 
+/** Shutdown the server, disconnect gpio and terminate the socket server */
 async function shutdown(server, gpio, wss, msg) {
   console.log(`${msg}, shutting down`)
 
@@ -73,15 +83,17 @@ async function shutdown(server, gpio, wss, msg) {
   }
 }
 
+/** Run an led animation to show the server has turned on */
 async function startupBlink(gpio, colour = '#ffffff10') {
   for (let i = 0; i < 8; i++) {
     await pause(10)
     await gpio.patchLeds([{ position: i, colour }])
   }
-  await pause(250)
+  await pause(150)
   await gpio.patchLeds(setAllLeds('#00000000'))
 }
 
+/** Create our express server which controls gpio */
 function createApp(gpio) {
   const app = express()
 
@@ -123,14 +135,13 @@ function createApp(gpio) {
 
       if (!hasAuthn) return res.status(401).send({ msg: 'Not authorized' })
 
-      if (ledLock) return res.status(400).send({ msg: 'Already running' })
-      ledLock = true
-
       const [structError, patches] = LedPatches.validate(req.body)
       if (structError) return res.status(400).send({ msg: structError.message })
 
-      debug('patches=%O', patches)
+      if (ledLock) return res.status(400).send({ msg: 'Already running' })
+      ledLock = true
 
+      debug('patches=%O', patches)
       await gpio.patchLeds(patches)
 
       res.send({ pixels: gpio.pixels })
@@ -152,6 +163,7 @@ function createApp(gpio) {
   return app
 }
 
+/** Create a WebSocket server to control the gpio when authenticated */
 function createSocketServer(server, gpio) {
   const wss = new ws.Server({ noServer: true })
 
@@ -205,6 +217,10 @@ function createSocketServer(server, gpio) {
   return wss
 }
 
+/**
+ * Run the blinkit server on a given port
+ * @param {number} port The port to run the server on
+ */
 async function runServer(port) {
   validateEnv(['SECRET_KEY'])
 

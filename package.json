@@ -67,6 +67,5 @@
       "prettier --write",
       "git add"
     ]
-  },
-  "main": "src/index.js"
+  }
 }

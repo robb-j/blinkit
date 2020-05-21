@@ -13,7 +13,7 @@ yargs.help().alias('h', 'help').demandCommand().recommendCommands()
 
 yargs.command(
   'serve',
-  '',
+  'Run the blinkit server to control the led hat',
   (yargs) =>
     yargs.option('port', {
       type: 'number',

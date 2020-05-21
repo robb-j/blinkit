@@ -1,67 +1,51 @@
+//
+// A class to control the blinkt led hat and a class to fake it in the terminal
+// - https://pinout.xyz/pinout/blinkt#
+// - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators#Bitwise_OR
+//
+
 const { Gpio } = require('onoff')
 const chalk = require('chalk')
 const debug = require('debug')('blinkit:gpio')
 
-//
-// https://pinout.xyz/pinout/blinkt#
-//
-
 const DATA_PIN = 23
 const CLOCK_PIN = 24
-// const HEX8_MAX = 0xffffffff
-// const MAX_BRIGHTNESS_MASK = 0x1f
-// const MIN_BRIGHTNESS_MASK = 0xE0
 
+//
+// Because javascript doesn't have interfaces
+//
 class AbstractGpio {
   setup() {}
   teardown() {}
   patchLeds() {}
 }
 
-// useful: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators#Bitwise_OR
-
-//
-// ??? (0xFFFFFFFF | 0xE0000000).toString(16) ???
-//
-// https://stackoverflow.com/questions/307179
-//
-// ??? https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt ???
-//
-
-function hexToNumber(hex8) {
-  // const rgb = hex8.slice(1, -2)
-  // const alpha = hex8.slice(-2)
-  // const number = parseInt(alpha + rgb, 16)
+/** Parse a '#aabbccdd' hex into an integer */
+function hexToInteger(hex8) {
   const number = parseInt(hex8.slice(1), 16)
   debug(`#hexToNumber input="${hex8}" output=${number}`)
   return number
 }
 
-//
-// Can't store 8 character hex in 32bit 2s compliment? :'(
-//
-
-// function parseHex(hex8) {
-//   const r = parseInt(hex8.slice(1, 3), 16)
-//   const g = parseInt(hex8.slice(3, 5), 16)
-//   const b = parseInt(hex8.slice(5, 7), 16)
-//   const a = parseInt(hex8.slice(7, 9), 16)
-//   return { r, g, b, a }
-// }
-
+/** Create a rgba pixel array of 0s */
 function createPixels() {
   return new Array(8).fill(0x00000000)
 }
 
-// Apply patches to an array of pixels
-// - skip out-of-bound patches (negative or > 7)
-// - clamp colours into allowed values
+/**
+ * Apply patches to an array of pixels
+ * - skip out-of-bound patches (negative or > 7)
+ * - clamp colour componentss into 0-255
+ *
+ * @param {number[]} pixels The pixels to overwrite
+ * @param {{position: number, colour: string}[]} patches The patches to apply
+ */
 function applyPatches(pixels, patches) {
   const result = Array.from(pixels)
 
   for (const patch of patches) {
     if (patch.position < 0 || patch.position > 7) continue
-    result[patch.position] = hexToNumber(patch.colour)
+    result[patch.position] = hexToInteger(patch.colour)
   }
 
   const r = (arr) => arr.map((v) => v.toString(16))
@@ -70,7 +54,10 @@ function applyPatches(pixels, patches) {
   return result
 }
 
-// Output pixels to stdout for inspection
+/**
+ * Dump pixels to stdout
+ * @param {number[]} pixels The pixels to output
+ */
 function dumpPixels(pixels) {
   process.stdout.write('[LED] ')
   for (const pixel of pixels) {
@@ -81,10 +68,15 @@ function dumpPixels(pixels) {
   process.stdout.write('\n')
 }
 
-function byteAlphaToNibble(input) {
+/**
+ * Convert an 8bit alpha component to 4bit
+ * @param {number} input The alpha number
+ */
+function byteToAlphaNibble(input) {
   return 0b11100000 | ((input >>> 3) & 0b00011111)
 }
 
+/** A class for interacting with live GPIO pins */
 class RealGpio extends AbstractGpio {
   setup() {
     debug('#setup')
@@ -100,6 +92,10 @@ class RealGpio extends AbstractGpio {
     this.clock.unexport()
   }
 
+  /**
+   * Send a series of on-off commands to the clock pin
+   * @param {number} pulses How many pulses to send
+   */
   pulse(pulses) {
     this.data.writeSync(0)
     for (let i = 0; i < pulses; i++) {
@@ -108,13 +104,15 @@ class RealGpio extends AbstractGpio {
     }
   }
 
+  /**
+   * Write a byte of data to the gpio using the data and clock pins
+   * @param {number} byte The number to write 8 bits to the data pin to
+   */
   writeByte(byte) {
     debug(`#writeByte byte=${byte.toString(2).padStart(8, '0')}`)
 
     for (let i = 0; i < 8; i++) {
       const bit = (byte >>> (7 - i)) & 1
-
-      // big endian or little endian ?? ...
 
       this.data.writeSync(bit)
       this.clock.writeSync(1)
@@ -122,7 +120,10 @@ class RealGpio extends AbstractGpio {
     }
   }
 
-  // ref: https://github.com/Irrelon/node-blinkt/blob/master/src/Blinkt.js#L134
+  /**
+   * Apply a series of patches and output them to the gpio
+   * @param {{position: number, colour: string}[]} patches The patches to apply
+   */
   patchLeds(patches) {
     this.pixels = applyPatches(this.pixels, patches)
 
@@ -133,12 +134,14 @@ class RealGpio extends AbstractGpio {
 
     // write each pixel
     for (const pixel of this.pixels) {
+      // Grab the components out of the byte
       const a = (pixel >>> 0) & 0xff
       const b = (pixel >>> 8) & 0xff
       const g = (pixel >>> 16) & 0xff
       const r = (pixel >>> 24) & 0xff
 
-      this.writeByte(byteAlphaToNibble(a))
+      // Write the components in turn
+      this.writeByte(byteToAlphaNibble(a))
       this.writeByte(b)
       this.writeByte(g)
       this.writeByte(r)
@@ -149,6 +152,7 @@ class RealGpio extends AbstractGpio {
   }
 }
 
+/** A faked gpio instance that outputs to the terminal instead */
 class TerminalGpio extends AbstractGpio {
   setup() {
     this.pixels = createPixels()

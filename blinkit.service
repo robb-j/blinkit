@@ -3,7 +3,7 @@
 #
 
 [Unit]
-Description=http api for a blinkt pi hat
+Description=blinkit
 Documentation=https://github.com/robb-j/blinkit/
 After=network.target
 
